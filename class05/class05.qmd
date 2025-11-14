@@ -1,0 +1,158 @@
+---
+title: "Class05: Data Viz with GGPLOT"
+author: "Henry Li (A16354124)"
+format: pdf
+---
+
+Today we are gonna play with plotting and graphics in R.
+
+There are lots of ways to make cool figures in R.
+
+The most popular package is `ggplot2`, which is part of the `tidyverse` collection of packages. --copilot
+
+There is "base" R graphics (`plot()`, `hits()`, `boxplot()`, etc.).
+
+There is also add-on packages like **ggplot**
+
+To insert any code, click three 'back-tick's to mark the start of the code, or just click the green button above, that is to the left of the button `Run`.
+```{r}
+head(cars,3)
+```
+Let's plot this with "base" R:
+*option + command + I* would directly insert a code block.
+```{r}
+plot(cars)
+```
+```{r}
+head(mtcars)
+```
+
+Let's plot `mpg` vs `disp`:
+`pch` is plotting character, each representing a symbol.
+```{r}
+plot(mtcars$mpg, mtcars$disp, pch=7)
+```
+
+```{r}
+hist(mtcars$mpg)
+```
+
+## GGPLOT (the pkg itself is called ggplot2)
+
+The main function in the ggplot2 package is **ggplot()**. First, I need to install the **ggplot2** package. To do this, I can install any package with the function `install.packages("ggplot2")`. 
+
+Then I need to load the package with `library(ggplot2)`.
+
+>**N.B** I never want to run `install.packages()` in my quarto source document!! If I do that, every time I render the document, it will try to install the package again. I only need to install a package once on my computer.
+
+`library()` loads the package into my current R session.
+
+```{r}
+library(ggplot2)
+# simply ggplot(cars) would not work. We need data, aesthetics, and geometries.
+ggplot(cars)+
+  aes(x=speed, y=dist)+
+  geom_point(pch = 11)
+```
+
+```{r}
+ggplot(cars) +
+  aes(speed) + 
+  geom_histogram(binwidth = 2, fill="blue", color="black", alpha=0.5)
+```
+
+Every ggplot needs at least 3 things:
+- Data (given with ggplot(cars))
+- Aesthetics (given with aes(x=speed, y=dist))
+- Geometries (given with geom_point())
+
+> For simple canned graphs "base" R is nearly always faster.
+
+### Adding more layers
+Let's add a line and a tile, subtitle, and caption as well as custom axis labels.
+```{r}
+ggplot(cars)+
+  aes(x=speed, y=dist)+
+  geom_point(pch = 11)+
+  geom_smooth(method = "lm", se=FALSE, color="blue")+
+  labs(title = "Stopping Distance vs Speed",
+       subtitle = "from the cars dataset",
+       caption = "source: R datasets package",
+       x = "Speed (mph)",
+       y = "Stopping Distance (ft)")+
+  theme_dark()
+```
+
+## Plot some expression data
+```{r}
+url <- "https://bioboot.github.io/bimm143_S20/class-material/up_down_expression.txt"
+genes <- read.delim(url)
+head(genes)
+```
+
+```{r}
+nrow(genes)
+colnames(genes)
+ncol(genes)
+table(genes$State)
+sum(genes$State == "up")
+round( table(genes$State)/nrow(genes) * 100, 2 )
+```
+
+```{r}
+p <- ggplot(genes) +
+  aes(x=Condition1, y=Condition2, color=State) +
+  geom_point(pch = 3) +
+  theme_minimal() +
+  geom_hline(yintercept = 0, linetype="dashed") +
+  geom_vline(xintercept = 0, linetype="dashed") +
+  labs(title="Gene Expression Changes",
+       x="Condition 1",
+       y="Condition 2",
+       color="Gene State") +
+  theme_light()
+p <- p + scale_colour_manual(values=c("cyan","pink","gold")) +
+    labs(title="Gene Expresion Changes Upon Drug Treatment",
+         x="Control (no drug) ",
+         y="Drug Treatment")
+library(ggrepel)
+p <- p + geom_text_repel(data=subset(genes, abs(Condition1) > 2 | abs(Condition2) > 2),aes(label=Gene), size=3, max.overlaps = 10)
+p
+```
+
+## Going further
+
+```{r}
+library(gapminder)
+library(dplyr)
+# File location online
+url <- "https://raw.githubusercontent.com/jennybc/gapminder/master/inst/extdata/gapminder.tsv"
+
+gapminder <- read.delim(url)
+head(gapminder)
+tail(gapminder)
+ggplot(gapminder) +
+  aes(y = lifeExp, x = gdpPercap, color = continent) +
+  geom_point(pch = 5, alpha = 0.2)+
+  facet_wrap(~continent) +
+  theme_dark()
+```
+
+```{r}
+p3 <- ggplot(gapminder) +
+  aes(y = lifeExp, x = gdpPercap, color = continent) +
+  geom_density2d_filled()+
+  facet_wrap(~continent) +
+  scale_color_manual(values = c("black", "yellow", "red", "blue", "green")) +
+  labs(title = "Life Expectancy vs GDP per Capita",
+       x = "GDP per Capita",
+       y = "Life Expectancy",) +
+  theme_dark()
+p3
+```
+```{r}
+library(patchwork)
+options(repr.plot.width = 8, repr.plot.height = 10)
+p / p3
+```
+

@@ -1,0 +1,47 @@
+---
+title: "HW Class 6"
+author: "Henry (A16354124)"
+format: pdf
+---
+
+Function writing homework
+
+# Can you improve this analysis code?
+``` {r}
+library(bio3d)
+# Line one of the function : s <- read.pdb (pdbfile)
+s1 <- read.pdb("4AKE") # kinase with drug
+s2 <- read.pdb("1AKE") # kinase no drug
+s3 <- read.pdb("1E4Y") # kinase with drug
+# Line two of the function : s.chain <- trim.pdb(s, chain = chainID, elety = "CA")
+s1.chainA <- trim.pdb(s1, chain="A", elety="CA")
+s2.chainA <- trim.pdb(s2, chain="A", elety="CA")
+s3.chainA <- trim.pdb(s1, chain="A", elety="CA")
+# Line three of the function : b <- s.chain$atom$b
+s1.b <- s1.chainA$atom$b
+s2.b <- s2.chainA$atom$b
+s3.b <- s3.chainA$atom$b
+# Line four of the function :  plotb3(b, sse = s.chain, typ = "l", ylab = "Bfactor")
+plotb3(s1.b, sse=s1.chainA, typ="l", ylab="Bfactor")
+plotb3(s2.b, sse=s2.chainA, typ="l", ylab="Bfactor")
+plotb3(s3.b, sse=s3.chainA, typ="l", ylab="Bfactor")
+```
+
+```{r}
+# Inputs to function: "pdbfile" like "4AKE" and "chainID" like "A"
+# This function reads in a pdb file, trims to specified chain and CA atoms,
+# The output of the function is a plot of B-factors for that chain.
+plotchain <- function(pdbfile, chainID){
+  library(bio3d)
+  s <- read.pdb(pdbfile)
+  s.chain <- trim.pdb(s, chain=chainID, elety="CA")
+  s.b <- s.chain$atom$b
+  plotb3(s.b, sse=s.chain, typ="l", ylab="Bfactor")
+}
+
+# Example usage:
+plotchain("4AKE", "A")
+plotchain("1AKE", "A")
+plotchain("1E4Y", "A")
+```
+

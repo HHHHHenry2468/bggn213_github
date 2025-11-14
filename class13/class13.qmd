@@ -1,0 +1,191 @@
+---
+title: "Class 13: RNASeq mini project"
+author: "Henry (A16354124)"
+format: pdf
+---
+
+## Background
+
+The authors report on differential analysis of lung fibroblasts in response to loss of the developmental transcription factor HOXA1. Their results and others indicate that HOXA1 is required for lung fibroblast and HeLa cell cycle progression. In particular their analysis show that "loss of HOXA1 results in significant expression level changes in thousands of individual transcripts, along with isoform switching events in key regulators of the cell cycle". For our session we have used their Sailfish gene-level estimated counts and hence are restricted to protein-coding genes only.
+
+## Data Import
+
+```{r}
+metaFile <- "GSE37704_metadata.csv"
+countFile <- "GSE37704_featurecounts.csv"
+
+# Import metadata and take a peak
+colData = read.csv(metaFile, row.names=1)
+head(colData)
+```
+
+```{r}
+countData = read.csv(countFile, row.names=1)
+head(countData)
+```
+
+```{r}
+countData <- as.matrix(countData[, -1])
+head(countData)
+```
+
+```{r}
+# Filter count data where you have 0 read count across all samples.
+countData = countData[rowSums(countData) > 0, ]
+head(countData)
+```
+
+## Setup for DESeq
+
+```{r, message = FALSE}
+library("DESeq2")
+dds = DESeqDataSetFromMatrix(countData=countData,
+                             colData=colData,
+                             design=~condition)
+dds = DESeq(dds)
+```
+
+
+## Run DESeq
+
+```{r}
+dds <- DESeq(dds)
+```
+
+## Get results
+
+```{r}
+res <- results(dds)
+```
+
+```{r}
+summary(res)
+```
+
+## Add annotation
+
+```{r}
+library("AnnotationDbi")
+library("org.Hs.eg.db")
+
+columns(org.Hs.eg.db)
+
+res$symbol = mapIds(org.Hs.eg.db,
+                    keys=row.names(res), 
+                    keytype="ENSEMBL",
+                    column="SYMBOL",
+                    multiVals="first")
+
+res$entrez = mapIds(org.Hs.eg.db,
+                    keys=row.names(res),
+                    keytype="ENSEMBL",
+                    column="ENTREZID",
+                    multiVals="first")
+
+res$name =   mapIds(org.Hs.eg.db,
+                    keys=row.names(res),
+                    keytype= "ENSEMBL",
+                    column="GENENAME",
+                    multiVals="first")
+
+head(res, 10)
+```
+
+## Visualize results
+
+
+```{r}
+library(ggplot2)
+
+mycols <- rep("gray", nrow(res) )
+mycols[ abs(res$log2FoldChange) > 2 ] <- "red"
+inds <- which(res$pvalue < 0.05 & abs(res$log2FoldChange) > 2)
+mycols[inds] <- "blue"
+
+ggplot(res) +
+  aes(x=log2FoldChange, y=-log10(pvalue)) +
+  geom_point(alpha=0.4, color = mycols) +
+  theme_minimal() +
+  xlab("Log2 Fold Change") +
+  ylab("-Log10 p-value") +
+  geom_vline(xintercept=c(-2, 2), col="red", linetype="dashed") +
+  geom_hline(yintercept=-log10(0.05), col="red", linetype="dashed") +
+  ggtitle("Volcano Plot of Differential Expression")
+```
+
+## Pathway analysis
+
+```{r}
+library(gage)
+library(gageData)
+library(pathview)
+data(kegg.sets.hs)
+data(sigmet.idx.hs)
+kegg.sets.hs = kegg.sets.hs[sigmet.idx.hs]
+head(kegg.sets.hs, 3)
+foldchanges = res$log2FoldChange
+names(foldchanges) = res$entrez
+head(foldchanges)
+keggres = gage(foldchanges, gsets=kegg.sets.hs)
+pathview(gene.data=foldchanges, pathway.id="hsa04110")
+```
+![Path View PNG](hsa04110.pathview.png)
+Another version
+
+```{r}
+pathview(gene.data=foldchanges, pathway.id="hsa04110", kegg.native=FALSE)
+```
+
+```{r}
+## Focus on top 5 upregulated pathways here for demo purposes only
+keggrespathways <- rownames(keggres$greater)[1:5]
+
+# Extract the 8 character long IDs part of each string
+keggresids = substr(keggrespathways, start=1, stop=8)
+keggresids
+```
+
+```{r}
+pathview(gene.data=foldchanges, pathway.id=keggresids, species="hsa")
+```
+![HSA04640](hsa04640.pathview.png)
+![HSA00140](hsa00140.pathview.png)
+![HSA04630](hsa04630.pathview.png)
+![HSA04330](hsa04330.pathview.png)
+![HSA04142](hsa04142.pathview.png)
+
+GO Analyses
+
+```{r}
+data(go.sets.hs)
+data(go.subs.hs)
+
+# Focus on Biological Process subset of GO
+gobpsets = go.sets.hs[go.subs.hs$BP]
+
+gobpres = gage(foldchanges, gsets=gobpsets, same.dir=TRUE)
+
+lapply(gobpres, head)
+```
+
+```{r}
+head(gobpres$less)
+```
+## Reactome
+
+Some folks like it, we can try it out here
+
+```{r}
+sig_genes <- res[res$padj <= 0.05 & !is.na(res$padj), "symbol"]
+print(paste("Total number of significant genes:", length(sig_genes)))
+write.table(sig_genes, file="significant_genes.txt", row.names=FALSE, col.names=FALSE, quote=FALSE)
+```
+
+![Reactome Pathway Analysis](R-HSA-68886.png)
+## Save results
+
+```{r}
+save(res, file = "my_results.RData")
+write.csv(res,file = "my_results.csv")
+```
+
