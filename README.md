@@ -3,6 +3,9 @@ Class work for bioinformatics class at UCSD. [BGGN213 at UC San Diego Super Good
 
 ## Class content
 
+- Class 01: [Welcome to Bioinformatics](class01.pdf)
+- Class 02: [Sequence alignment fundamentals, algorithms and applications](class02.pdf)
+- Class 03: [Advanced sequence alignment and database searching](class03.pdf)
 - Class 04: [R fundamentals](class04/class04.md)
 - Class 05: [Data visualizations with goodgameplot()](class05/class05.md)
 - Class 06: [Writting R functions](class06/class06.md)
