@@ -13,8 +13,6 @@ Class work for bioinformatics class at UCSD. [BGGN213 at UC San Diego Super Good
 - Class 11: [AlphaFold and Structural Prediction (pt2)](class11/class11.md)
 - Class 12: [Transcriptomics, RNA-Seq analysis, and the interpretation of gene lists](class12/class12.md)
 - Class 13: [RNA-Seq mini project](class13/class13.md)
-- Class 14: [Hands-on with Git and GitHub](class14/class14.md)
-- Class 15: [Essential UNIX for bioinformatics](class15/class15.md)
 - Class 16: [Analyzing sequencing data in the cloud](class16/class16.md)
 - Class 17: [Online-Only / Genome informatics and high throughput sequencing review](class17/class17.md)
 - Class 19: [Investigating pertussis resurgence mini project](class19/class19.md)
