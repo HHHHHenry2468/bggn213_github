@@ -1,0 +1,419 @@
+---
+title: "Class 19: Pertussis Mini Project"
+author: "Henry (A16354124)"
+format: pdf
+toc: true
+---
+
+## Background
+Pertussis (a.k.a. Whooping cough) is a highly infectious lung infection caused by the bacteria *B. Pertussis*.
+
+The CDC tracks case numbers in the U.S. and make it available online.
+
+```{r, include = FALSE}
+cdc <- data.frame(
+  year = c(
+    1922L,
+    1923L,
+    1924L,
+    1925L,
+    1926L,
+    1927L,
+    1928L,
+    1929L,
+    1930L,
+    1931L,
+    1932L,
+    1933L,
+    1934L,
+    1935L,
+    1936L,
+    1937L,
+    1938L,
+    1939L,
+    1940L,
+    1941L,
+    1942L,
+    1943L,
+    1944L,
+    1945L,
+    1946L,
+    1947L,
+    1948L,
+    1949L,
+    1950L,
+    1951L,
+    1952L,
+    1953L,
+    1954L,
+    1955L,
+    1956L,
+    1957L,
+    1958L,
+    1959L,
+    1960L,
+    1961L,
+    1962L,
+    1963L,
+    1964L,
+    1965L,
+    1966L,
+    1967L,
+    1968L,
+    1969L,
+    1970L,
+    1971L,
+    1972L,
+    1973L,
+    1974L,
+    1975L,
+    1976L,
+    1977L,
+    1978L,
+    1979L,
+    1980L,
+    1981L,
+    1982L,
+    1983L,
+    1984L,
+    1985L,
+    1986L,
+    1987L,
+    1988L,
+    1989L,
+    1990L,
+    1991L,
+    1992L,
+    1993L,
+    1994L,
+    1995L,
+    1996L,
+    1997L,
+    1998L,
+    1999L,
+    2000L,
+    2001L,
+    2002L,
+    2003L,
+    2004L,
+    2005L,
+    2006L,
+    2007L,
+    2008L,
+    2009L,
+    2010L,
+    2011L,
+    2012L,
+    2013L,
+    2014L,
+    2015L,
+    2016L,
+    2017L,
+    2018L,
+    2019L,
+    2020L,
+    2021L,
+    2022L,
+    2023L
+  ), cases = c(
+    107473,
+    164191,
+    165418,
+    152003,
+    202210,
+    181411,
+    161799,
+    197371,
+    166914,
+    172559,
+    215343,
+    179135,
+    265269,
+    180518,
+    147237,
+    214652,
+    227319,
+    103188,
+    183866,
+    222202,
+    191383,
+    191890,
+    109873,
+    133792,
+    109860,
+    156517,
+    74715,
+    69479,
+    120718,
+    68687,
+    45030,
+    37129,
+    60886,
+    62786,
+    31732,
+    28295,
+    32148,
+    40005,
+    14809,
+    11468,
+    17749,
+    17135,
+    13005,
+    6799,
+    7717,
+    9718,
+    4810,
+    3285,
+    4249,
+    3036,
+    3287,
+    1759,
+    2402,
+    1738,
+    1010,
+    2177,
+    2063,
+    1623,
+    1730,
+    1248,
+    1895,
+    2463,
+    2276,
+    3589,
+    4195,
+    2823,
+    3450,
+    4157,
+    4570,
+    2719,
+    4083,
+    6586,
+    4617,
+    5137,
+    7796,
+    6564,
+    7405,
+    7298,
+    7867,
+    7580,
+    9771,
+    11647,
+    25827,
+    25616,
+    15632,
+    10454,
+    13278,
+    16858,
+    27550,
+    18719,
+    48277,
+    28639,
+    32971,
+    20762,
+    17972,
+    18975,
+    15609,
+    18617,
+    6124,
+    2116,
+    3044,
+    7063
+  )
+)
+```
+
+>Q1. Make a plot of Pertussis cases per year with ggplot
+
+```{r}
+library(ggplot2)
+
+ggplot(cdc)+
+         aes(year, cases)+
+         geom_point()+
+         geom_line()
+```
+
+>Q2. Add some annotation (lines on the plot) for some major milestones in Pertussis vaccination history. The original wP deployment in 1947 and the newer aP vaccine roll-out in 1996.
+
+```{r}
+ggplot(cdc)+
+         aes(year, cases)+
+         geom_point()+
+         geom_line()+
+         geom_vline(xintercept = 1947, linetype="dashed", color = "red")+
+         geom_vline(xintercept = 1996, linetype="dashed", color = "blue")+
+         geom_vline(xintercept = 2008, linetype = "dashed", color = "green")+
+         geom_vline(xintercept = 2020, linetype = "dashed", color = "purple")+
+         annotate("text", x = 1950, y = 250000, label = "wP Vaccine Introduced", color = "red", angle=90, vjust = -0.5)+
+         annotate("text", x = 1999, y = 250000, label = "aP Vaccine Introduced", color = "blue", angle=90, vjust = -0.5)+
+         annotate("text", x = 2008, y = 250000, label = "Obama", color = "green", angle=90, vjust = -0.5)+
+         annotate("text", x = 2020, y = 250000, label = "COVID-19 Pandemic", color = "purple", angle=90, vjust = -0.5)
+```
+
+>Q2.5(Q3 in labsheet). Describe what happened after the introduction of the aP vaccine? Do you have a possible explanation for the observed trend?
+
+Seems that the problem would go with flus and virus pandemics like H1N1, SARS, and COVID-19. The aP vaccine was introduced in 1996, and after that, there was a general decline in pertussis cases. However, there were spikes in cases around 2004 and 2012, which could be attributed to various factors such as changes in vaccination rates, waning immunity, or increased awareness and reporting of the disease. The COVID-19 pandemic in 2020 also likely impacted pertussis case numbers due to changes in healthcare access and public health measures.
+
+The aP vs wP
+
+## The CMI-PB project
+The CMI-Pertussis Boost (PB) project focuses on gathering data on this very topic. What is distinct between aP and wP individuals over time when they encounter Percussis again.
+
+They make their data available via a JSON format returning API. We can read JSON format with the `read_json()` function from the **jsonlite** package.
+
+```{r}
+library(jsonlite)
+subject <- read_json("https://www.cmi-pb.org/api/v5_1/subject",
+                     simplifyVector = TRUE)
+head(subject)
+```
+
+>Q3. How many "subject" (or individuals) are in this dataset?
+
+```{r}
+table(subject$infancy_vac)
+```
+
+>Q4. How many wP and aP primed subjects are there in the dataset?
+
+```{r}
+sum(subject$infancy_vac == "wP")
+sum(subject$infancy_vac == "aP")
+table(subject$infancy_vac)
+```
+
+>Q5. What is the `biological_sex` and `race` breakdown of these subjects?
+
+```{r}
+table(subject$race, subject$biological_sex)
+```
+
+Let's read more tables from the CMI-PB database API.
+
+```{r}
+specimen <- read_json("http://cmi-pb.org/api/v5_1/specimen",
+                      simplifyVector = TRUE)
+ab_titer <- read_json("https://www.cmi-pb.org/api/v5_1/plasma_ab_titer",
+                      simplifyVector = TRUE)
+```
+
+Join (or link, or merge, or whatever) these two tables together based on the `specimen_id` column that is present in both tables, using the `inner_join()` function from **dplyr** package.
+
+```{r}
+library(dplyr)
+
+meta <- inner_join(subject, specimen)
+
+head(meta)
+```
+
+```{r}
+head(ab_titer)
+```
+
+```{r}
+ab_data <- inner_join(meta, ab_titer)
+head(ab_data)
+```
+
+>Q6. How many different Ab isotypes are there?
+
+```{r}
+unique(ab_data$isotype)
+```
+
+>Q7. How many different antigens are there in the dataset?
+
+```{r}
+unique(ab_data$antigen)
+```
+
+>Q8. Let's plot antigen MFI levels accross the whole dataset.
+
+```{r}
+ggplot(ab_data)+
+  aes(MFI, antigen)+
+  geom_boxplot()
+```
+
+## Focus in IgG
+
+IgG is crucial for long-term immunity and responding to bacterial & viral infections.
+
+```{r}
+igg <- ab_data |> 
+  filter(isotype == "IgG")
+```
+
+Plot of antigen levels again but for IgG only
+
+```{r}
+ggplot(igg) +
+  aes(MFI_normalised, antigen) +
+  geom_boxplot()
+```
+
+### Differences between aP and wP?
+
+We can color up by the `infancy_vac` values of "wP" or "aP". 
+
+```{r}
+ggplot(igg) +
+  aes(MFI_normalised, antigen, col = infancy_vac) +
+  geom_boxplot()
+```
+
+We can facet by the aP vs wP column.
+
+```{r}
+ggplot(igg) +
+  aes(MFI_normalised, antigen, col = infancy_vac) +
+  geom_boxplot() +
+  facet_wrap(~infancy_vac)
+```
+
+### Time course analysis
+
+```{r}
+table(ab_data$visit)
+```
+
+We can use `visit` as a proxy for time here and facet out plots by this value 1 to 8 ...
+
+```{r}
+igg |>
+  filter(visit %in% 1:8) |>
+  ggplot() +
+    aes(MFI_normalised, antigen, col = infancy_vac) +
+    geom_boxplot() +
+    facet_wrap(~visit, nrow = 2)
+```
+
+## Time course of PT
+
+```{r}
+pt <- igg |>
+  filter(antigen == "PT") |>
+  filter(dataset == "2021_dataset")
+```
+
+```{r}
+ggplot(pt) +
+    aes(x=planned_day_relative_to_boost,
+        y=MFI_normalised,
+        col=infancy_vac,
+        group=subject_id) +
+    geom_point() +
+    geom_line() +
+    geom_vline(xintercept=0, linetype="dashed") +
+    geom_vline(xintercept=14, linetype="dashed") +
+    labs(title="2021 dataset IgG PT",
+       subtitle = "Dashed lines indicate day 0 (pre-boost) and 14 (apparent peak levels)")
+```
+
+## Session setup
+
+```{r}
+sessionInfo()
+```
+

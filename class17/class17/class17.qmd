@@ -1,0 +1,46 @@
+---
+title: "Class 17: Population Scale Analysis"
+author: Henry (A16354124)
+format: pdf
+---
+
+## Q13
+```{r}
+# Read the file directly from the URL
+url <- "https://bioboot.github.io/bggn213_W19/class-material/rs8067378_ENSG00000172057.6.txt"
+data <- read.table(url)
+
+# Inspect the first few rows to make sure it looks right
+head(data)
+```
+
+```{r}
+# 1. Sample Size for each genotype
+cat("Sample Size for each genotype:\n")
+table(data$geno)
+
+# 2. Median Expression for each genotype
+cat("Median Expression for each genotype:\n")
+tapply(data$exp, data$geno, median)
+```
+
+## Q14
+```{r}
+# Boxplot of Expression by Genotype
+boxplot(exp ~ geno, data = data,
+        main = "Expression of ORMDL3 by Genotype",
+        xlab = "Genotype (rs8067378)",
+        ylab = "Expression Level (FPKM)",
+        col = c("red", "green", "blue"),
+        notch = TRUE)
+```
+
+```{r}
+# Perform One-Way ANOVA
+# Formula: Expression depends on Genotype (exp ~ geno)
+results_aov <- aov(exp ~ geno, data = data)
+
+# Print the summary (Look for the "Pr(>F)" column, which is your P-value)
+summary(results_aov)
+```
+
