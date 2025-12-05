@@ -1,7 +1,7 @@
 ---
 title: "Class08"
 author: "Henry Li (A16354124)"
-format: pdf
+format: gfm
 toc: true
 ---
 

@@ -1,7 +1,7 @@
 ---
 title: "Class 9: Structural Bioinformatics pt 1."
 author: "Henry (A16354124)"
-format: pdf
+format: gfm
 ---
 
 ## The PDB database
